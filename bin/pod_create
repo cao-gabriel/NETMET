@@ -1,1 +1,1 @@
-kubectl run $1 --image=dioptraio/education --overrides='{ "apiVersion": "v1", "spec": { "nodeSelector": {"kubernetes.io/hostname": "'$1'" }}}' --requests='cpu=1m,memory=16Mi'
+kubectl run $1 --image=dioptraio/education --overrides='{ "apiVersion": "v1", "spec": { "nodeSelector": {"kubernetes.io/hostname": "'$2'" }}}' --requests='cpu=1m,memory=16Mi'
