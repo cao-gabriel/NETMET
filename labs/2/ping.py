@@ -31,7 +31,7 @@ class Ping(object):
             response = sr1(icmp_request, timeout=self.timeout, verbose=False)
             if response is None:
                 packet_lost += 1
-
+        
             # Compute the RTT (Round Trip Time)
             rtt = (response.time - request_timestamp) * 1000
 
@@ -67,6 +67,7 @@ class Ping(object):
             f"round-trip min/avg/max/stddev = "
             f"{min_rtt:.3f}/{avg_rtt:.3f}/{max_rtt:.3f}/{std_rtt:.3f} ms"
         )
+		
 
 
 if __name__ == "__main__":
