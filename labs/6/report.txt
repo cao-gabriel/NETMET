@@ -1,0 +1,20 @@
+Multipath detection
+
+Analysis
+
+=> In a network perspective, what could be the issue of using Per-packet load-balancing ?
+Packets can use two paths, but by doing this, when we traceroute, we can think that a router of the first path is connected to a router of the other path.
+
+=> Can you formulate precisely the problem of false links with Per-flow load-balancing that lead to errors in the classic Traceroute output ?
+The classic traceroute change the destination port of each probes so that it can link the probe with the response, the per-flow load balancing doesn't work and there are still false links issues.
+
+Formulate a fix
+
+=> What modification can we make to the algorithm of the classic Traceroute in order to avoid the false link issue ?
+We can avoid changing fields in the packet
+
+=> What other problem occurs if we implement that solution ? How can we overcome this issue ?
+Issue : No matching probe/response
+
+=> Traceroute is sending multiple probes per TTL. How can we know which request is matching the responses between these 3 probes with the same (flow,ttl) in our case ?
+Find a field that we can change but not in header fields used by flow identification : checksum
