@@ -1,0 +1,139 @@
+BGP is a routingprotocol that enables th exchange of information between borderline routers. BGP make prefix annoucement.
+For now, there are 70k ASes that announced 850k IPv4 prefixes and 20k ASes that announced 100 IPv6 prefixes.
+
+internal BGP is used to communicate between border router of one AS.
+external BGP is used to communicate between boder router of different ASes.
+
+BGP has limits:
+    - Router representativeness
+    - Changes are not visible unless they affect inter-domain routing
+    - changes to small prefixes get filtered.
+ ------------------------------------------------------------------------------------------------
+ 
+Network measurement:
+
+WHO ? network operators, users, application/service developers, policy makers, regulators, scientists
+
+WHAT ? 
+    - Internet infrastructure ( End-to-end path, AS, links, router) : delay of packets, jitter, capacty, loss, toppology
+    - Internet traffic ( IP, TCP/UDP packets, per flow or connection stats, per interface counters) : link utilization, application used, traffic patterns, secuirty
+    - Internet application ( payload, instrument, crawl app) : web page load time, video buffering rates, popularity of social network
+
+HOW ?
+    - Active : issue probes ping
+    - Passive : observe existing traffic
+
+WHERE ?
+    - Vantage point:
+        - end-hosts : active measurement of end to end paths,passive measurement of host traffic and apps
+        - Routers : active measurement of network path, passive measurement of trafficn protocol exchange
+ETHICS : avoid diruption, respect privacy, do not harm
+
+Source of informations:
+    - ROUTEVIEWS, RIPE RIS BGP data
+    - CAIDA ark, RIPE Atlas Topology
+    - M-LAB, FCC SAMKNOWS ACCESS, path performance
+    - CRAWDAD, wireless data
+Measurement platform:
+    - looking glass servers isp, ixp
+    - Distributed servers planetlab, m-lab
+    - Low cost monitors home offices
+    - Software platforms dasu fathom
+    
+-------------------------------------------------------------------------------------------------
+
+Bandwitdth:
+
+Defining the capacity on a link then on an end to end path
+Defining the available bandwidth ( capacity minus the link usage) on a link then on an end to end path
+Defining the bulk transfer capacity (rate that a transmitting entity that implements standard congestion control can attain) depending on transfer size, type of TCP, congestion on network, cross traffic presence
+
+----------------------------------------------------------------------------------------------------
+
+How to make measurements :
+    - Active methods : capacity, the available capacity, bulk transfer capacity for e2e path
+        - Flooding (iperf, speedtest)
+            - BTC : max data possible and retrieve time stamps ONE TCP connection
+            - Available bandwidth : max data MULTIPLE TCP Connection and retrieve time stamps
+        - Advanced method
+            - Packet pair : send a pair of packet measure inter packet gap packet one  
+    - Passive methods : configured caapacity, utilisation for single links/small number of links
+
+
+---------------------------------------------------------------------------------------------------
+
+- Ping
+- Connectivity
+    - Problems : link down, congestion, routing loop, firewall, host down, nic down, service not available
+- Losses
+    - Best effort
+    - Causes
+        - Congestion : full buffers, queue management
+        - Medium errors : interference, lower rates, corrupted, lost packet
+        - Routing loops : TTL -> 0
+
+---------------------------------------------------------------------------------------------------
+
+Latency : One way delay ping, tcptrace, owamp
+    - Processing delay at each end : 100 ns to 10 microsecond
+    - Transmission delay : 10-100 microseconds
+    - Propagation delay : speed of light, ms
+    - queueing delay : almost zero
+    
+Clock relative offset : Difference between two clock time
+Clock skew : difference in frequency between two clocks
+Clockk drift : rate at which the difference in frequency is changing
+
+---------------------------------------------------------------------------------------------------
+
+Different granularities:
+    - per packet
+    - per flow
+    - per interface
+
+Different tools:
+    - packet capture : tcpdump, libcapn wireshark
+        - Network : promiscuous mode
+        - Link : Port mirroring, network tap (high speed capture)
+    - interface counts : log done by routers, retrieve data through SNMP
+    - flow capture : router log stats per flow, IPFIX collect process
+        - Flow record :  route cpu, line card, packet monitor
+        - Flow cache
+-------------------------------------------------------------------------------------------------------
+Traffic matrix : Representation of traffic volume flowing from sources to destinations
+    - Uses : Capacity planning, traffic engineeringbilling, security, research
+    - List:
+        - Origin/Destination : all origin to all destinations (2^32 origin/destination possible)
+        - Ingress/Egress router matric : router where traffic go in to router where traffic go out
+        - Ingress ruter/ AS
+    - bin traffic : depends on measurement tools, storage facilitites
+    - how to measure : 
+        - packet capture, 
+        - flow capture (best way), 
+        - interface counts
+    
+---------------------------------------------------------------------------------------------------
+Application identification methods:
+    - Port based : simple, fast, used in firewalss, non standard port, masquerade traffic
+    - Content based : widely used, privacy issues, compute a lod, encryption
+    - Behavior based : identification of app, protocol, not accurate
+-----------------------------------------------------------------------------------------------------
+Network security
+
+Traffic anomaly detection : through traffic matrixes, for detection of volume attacks
+	- temporal : analysing time series
+	- spatial : identify normal traffic behaviour across multiple traffic matrixes
+	
+Network intrusion detection : through packet analysis, access control signature
+
+Network telescope : darknet, monitor unused ip address
+
+
+
+
+
+
+
+
+
+
