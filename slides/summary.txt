@@ -1,139 +1,225 @@
-BGP is a routingprotocol that enables th exchange of information between borderline routers. BGP make prefix annoucement.
-For now, there are 70k ASes that announced 850k IPv4 prefixes and 20k ASes that announced 100 IPv6 prefixes.
-
-internal BGP is used to communicate between border router of one AS.
-external BGP is used to communicate between boder router of different ASes.
-
-BGP has limits:
-    - Router representativeness
-    - Changes are not visible unless they affect inter-domain routing
-    - changes to small prefixes get filtered.
- ------------------------------------------------------------------------------------------------
- 
-Network measurement:
-
-WHO ? network operators, users, application/service developers, policy makers, regulators, scientists
-
-WHAT ? 
-    - Internet infrastructure ( End-to-end path, AS, links, router) : delay of packets, jitter, capacty, loss, toppology
-    - Internet traffic ( IP, TCP/UDP packets, per flow or connection stats, per interface counters) : link utilization, application used, traffic patterns, secuirty
-    - Internet application ( payload, instrument, crawl app) : web page load time, video buffering rates, popularity of social network
-
-HOW ?
-    - Active : issue probes ping
-    - Passive : observe existing traffic
-
-WHERE ?
-    - Vantage point:
-        - end-hosts : active measurement of end to end paths,passive measurement of host traffic and apps
-        - Routers : active measurement of network path, passive measurement of trafficn protocol exchange
-ETHICS : avoid diruption, respect privacy, do not harm
-
-Source of informations:
-    - ROUTEVIEWS, RIPE RIS BGP data
-    - CAIDA ark, RIPE Atlas Topology
-    - M-LAB, FCC SAMKNOWS ACCESS, path performance
-    - CRAWDAD, wireless data
-Measurement platform:
-    - looking glass servers isp, ixp
-    - Distributed servers planetlab, m-lab
-    - Low cost monitors home offices
-    - Software platforms dasu fathom
-    
--------------------------------------------------------------------------------------------------
-
-Bandwitdth:
-
-Defining the capacity on a link then on an end to end path
-Defining the available bandwidth ( capacity minus the link usage) on a link then on an end to end path
-Defining the bulk transfer capacity (rate that a transmitting entity that implements standard congestion control can attain) depending on transfer size, type of TCP, congestion on network, cross traffic presence
-
-----------------------------------------------------------------------------------------------------
-
-How to make measurements :
-    - Active methods : capacity, the available capacity, bulk transfer capacity for e2e path
-        - Flooding (iperf, speedtest)
-            - BTC : max data possible and retrieve time stamps ONE TCP connection
-            - Available bandwidth : max data MULTIPLE TCP Connection and retrieve time stamps
-        - Advanced method
-            - Packet pair : send a pair of packet measure inter packet gap packet one  
-    - Passive methods : configured caapacity, utilisation for single links/small number of links
-
-
----------------------------------------------------------------------------------------------------
-
-- Ping
-- Connectivity
-    - Problems : link down, congestion, routing loop, firewall, host down, nic down, service not available
-- Losses
-    - Best effort
-    - Causes
-        - Congestion : full buffers, queue management
-        - Medium errors : interference, lower rates, corrupted, lost packet
-        - Routing loops : TTL -> 0
-
----------------------------------------------------------------------------------------------------
-
-Latency : One way delay ping, tcptrace, owamp
-    - Processing delay at each end : 100 ns to 10 microsecond
-    - Transmission delay : 10-100 microseconds
-    - Propagation delay : speed of light, ms
-    - queueing delay : almost zero
-    
-Clock relative offset : Difference between two clock time
-Clock skew : difference in frequency between two clocks
-Clockk drift : rate at which the difference in frequency is changing
-
----------------------------------------------------------------------------------------------------
-
-Different granularities:
-    - per packet
-    - per flow
-    - per interface
-
-Different tools:
-    - packet capture : tcpdump, libcapn wireshark
-        - Network : promiscuous mode
-        - Link : Port mirroring, network tap (high speed capture)
-    - interface counts : log done by routers, retrieve data through SNMP
-    - flow capture : router log stats per flow, IPFIX collect process
-        - Flow record :  route cpu, line card, packet monitor
-        - Flow cache
--------------------------------------------------------------------------------------------------------
-Traffic matrix : Representation of traffic volume flowing from sources to destinations
-    - Uses : Capacity planning, traffic engineeringbilling, security, research
-    - List:
-        - Origin/Destination : all origin to all destinations (2^32 origin/destination possible)
-        - Ingress/Egress router matric : router where traffic go in to router where traffic go out
-        - Ingress ruter/ AS
-    - bin traffic : depends on measurement tools, storage facilitites
-    - how to measure : 
-        - packet capture, 
-        - flow capture (best way), 
-        - interface counts
-    
----------------------------------------------------------------------------------------------------
-Application identification methods:
-    - Port based : simple, fast, used in firewalss, non standard port, masquerade traffic
-    - Content based : widely used, privacy issues, compute a lod, encryption
-    - Behavior based : identification of app, protocol, not accurate
------------------------------------------------------------------------------------------------------
-Network security
-
-Traffic anomaly detection : through traffic matrixes, for detection of volume attacks
-	- temporal : analysing time series
-	- spatial : identify normal traffic behaviour across multiple traffic matrixes
+Traceroute:
+	- The TTL field is the key of traceroute function
+	- The UDP layer is used in probe packets by default
+	- The router send back ICMP message in return
+	- Traceroute has limits : it can returns star and it reply from non-ingress interface so it can have missing information and misleading information
+	-per flow load balancing and traceroute changes the flow identifier with each probe, it can be resolved with paris traceroute. Per packet load balancing, no solution but no freuqent
 	
-Network intrusion detection : through packet analysis, access control signature
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-Network telescope : darknet, monitor unused ip address
+BGP
 
+- 70K ASes announcing 850k IPv4 prefixes
+- 21k ASes announcing 98k IPv6 prefixes
+- Intradomain routing protocol OSPF IS-IS
+- Inter domain protocols BGP
+- BGP updates data is in Oregon Route View, RIPE routing information servie. Peering with BGP routers worldwide, 500 sessions for route views, 30-40 sessions for RIPE RIS
+- To communicate between border routers of differents ASes, we use external BGP
+- To convey announcements inside an AS from one border to another, we use internal BGP
+- BGP update limits : router representativeness, internal changes, changes not visible unless they affect inter domain routing, agregation changes to small prefixes get filtered
 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+metrology introduction
 
+- network monitoring for network operators : monitor service level agreements, fault diagnosis, security
+- network monitoring for users: verify network performance, slect service provider, applications  manage network services
+- network monitoring for application/service developers : verify application performance, tuning applicationsw to network conditions, server or path selection
+- network monitoring for regulators, policy makers : comparison among ISPs, verification of compliance to regulatory laws, decisions about investments
+- network monitoring is essential for sicentis : evaluate and design new systems, internet touches social/political aspects, structure and dynamics of the internet structure
+- AS : distinct regions of administrative control , a set of routers and links managed by a single institution
 
+-Measure internet infrastructure : find properties (delay, kitter, capacity, loss, topology) of partrs of the network (end to end path, as, link, router)
+- Measure internet traffic : infer usage (link apps, patters, pirates) from network traffic (IP, tcp, udp packets, per flow stats, per interface counters)
+-measure internet applications :infer application performance and usage (web page load time, video buffering rates, popularity of social network members) from entwork traffic or application (payload, intrument the app, crawl the app)
 
+- Active measurement techniques : issue probes and analyse response (ping), measure traffci even whe, traffic is not possible measure network app performance, probing extra load
+- Passive measurement : observe existing traffic tcp trace only wai to measure traffic, measure user experience, bheaviour, protocol exchanges, raise privacy concerns
 
+- Vanatege point : end host connected to the internet active meashrement of end to end path, passivemetn measurement of host traffic. routers hosts in network path active measurement of network path passive measurement of traffic protocol exchanges configuration
 
+-what to expect : identify properties that must hold : rtt less than delay of speed of light, number of bytes in a tcp connection < duration * max capacity, when properties fail to hold incorrect assumption, measurement error
 
+-know the measuremdent tool : study precision and accuracy, examine outliers and spikes, monitor cofounding factors, evaluate synthetic data, compare multiple methods
+- know where data comes from : log meta data with traces (any info required to understand measurement, remember data often used for unexpected purposes), version of measurement tool and paprameters, when where trace was recorded, clock preicion, drops missing data
+
+- avoid disruption : active probing can overload networks, we should put contact info in probes, throttle probing, spread load
+- respect privavy : get user informed consent, comply with local data protection laws, anonymize data when possible
+-do no harm : identify potential harm, reduce risks 
+
+-types of data :  routing monitors (bgp, ospf), active measurement (path toppology, performance), passive measurements (snmp counters, wireless metrixs)
+
+- public source of data : bgp data (routeviews, ripe, ris), topology (caida ark, ripe atlas), access, path performance (m lab, fccc samknows), wireless data (crawdad)
+-clse to core
+	- looking glass servers : connected to major isp, ixp, allow interactive queries, bgp, ping traceroute
+	- distributed servers : planet lab, m lab, deployed in university campus, data centers, well connected powerful machines, support uniing measurment scipts
+- at the edge
+	- low cost monitors : ripe atlas, sam knows bismark, deployed close users, more diverse connectivy constrained machines
+	- software platform : dasu, fathom, easier to deploy, large number of users, not always on
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Bandwidth
+-Metrics :
+	- Capacity : Maximum transfer rate of maximum sized packets
+	- Available bandwidth : available bandwidth at a given time interval
+	- Buld transfer caapcity : througput of a single tcp connection depend on transfer size, tcp configuration, congestion on reverse path, cross traffic
+
+- end to end measuremnt:
+	-active : capacity =, available bandwith, bulk trasnfer caoacuty, measure any path with access to sorce and/or destination
+	- passive : configured capacity, utilization, measure single links or small number of links
+	
+Active measurment:
+	- controol of source and destination : source issue probe, destination received with timestamp and estime metrics from set of probes
+	- control of source of path : issue probe and estimate metrics from repsonse, hard to distinging properties fo forward and reverse paths
+
+Probing method of active measurement:
+	- FLOODING : issue large number of probes to fill path, measure what users can get, but large overhead affect network and users for bulk transfer capacity, available bandwidth iperf3, speedtest
+	- ADVANCED METHOD : less overhead than flooding, rely on assumptions that dont always hold in practive
+		- packet pair 
+			- END TO END CAPACITY : C = size packet / inter gap. send a pair of equal sized packets back to back and measure the inter packet gap at destination. prob size and interval, cross traffic will modify inter probe gap, gap hard to measure at high capacity
+			- available bandwidth with packet pair: a = C * (1 - deltad - deltas / deltas). use pari of probes to measure capacity and cross traffic. bottle neck router queue not emptuy between probes, requires fifo queueing
+		- size delay : 
+			- Capacity : T(L) =  alpha + beta * L, first term propagation delay and second term trasmission delay, send rtt probes with varying packet sizess and estimate alpha an dbeta, the capcity is the inverse of beta but presend of cross traffic will break assumptions, and packet size may vary in the network
+		-self induced congestion
+			available bandwith: send train of equal size probes with rate R adn search R 
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=
+Connectivity, latency, lsos, geolocate
+
+Connectivity : 
+	network : link down, confestion, routing loop, firewall or middle box
+	host : is down, runnning, network interface down, service not available
+Losses:
+	best effort
+	cause of loss: 
+		congestion : full buffers, queue management
+		medium errors: wireless, fiber optics, individual bits, data link retransmit
+		routing loops ttl equal 0
+	loss rate : wealthier counjtry 0.1% poorer country 1%
+latency : rtt
+	component: propagation, transmission, processing, queuing delay
+	clock : offset, skew, drift
+	tools : tcptrace, ping, owamp
+	geolocation : intllectual proparty owners to control delivery, advertisers to target content, security prof to monitor, mulitlateration
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=
+
+Traffic measurement
+
+Packet capture:
+	on end system: capture packet passing trhough an interface usibg tcpdump libcap wireshark
+	in broadcast lan : promiscuous mode
+	point to point link : 
+		port mirroring : copies packet from one or more ports to a mirroring port, run packet capturing tool on host connected to mirroring port. easy to setup and low cost but hardware and media errors are dropped, packets may be dropped at high use
+		network tap : electrical or optical splitter on mo,nitored link, monitoring host with specialized network interface and interface driver. monitor all packets eliminate risk of dropped packets but expensive
+
+Interface count: router log simple stat and we can request stats using snmp. it little performance impact on routers, is supported on al networking equipment, and little storage needs but there can be missing data becase dnmp use udp , polling makes it hard to synchronize data from multiple interface and there is coarse grained measuremnts
+
+Flow capture: 
+	step 1 capture ; specify set of properties that define a flow, the router log stats per flow, and then push flow record to collecting process ipfix.
+	step 2 collect :
+		- route cpu that generates flow records bu tit degrade forwarding experience
+		- line card that generate flow recors it's more efficient to suport measurment in each  line card
+		- packet monitor that generate flow record but it often require third party equipment
+	flow cache : matinain a cache of active flows, compute a keu per incoming packet, index into the flow cached based on the key
+	evicting cache entries:
+		flow time out : remove flow that have not recevied a packet recentluy, periodic sequencing through the cache to time out flwos, new packet triggers the creation of a new flow
+		cache replacement : remove flow when the flow cache is full, evict existing flow upon ceating a new cache entry, apply eviction policy
+		long lived flow
+
+flow monitoring give more detail about traffic compared tocounters, lower measurment volume than full packet traces, available on high end line card, control over overheaf via aggregation and sampling but it five less detail than packet capture, not uniformly supported and need computation memory for the flow cache
+
+Interface counts is use everywhere : track link use and detect anomaly, generate bill for traffic on customer link, infer the offer load
+packet monitoring is used in selcted location to anazlyse the small time scale behaviour of traffic and trouble shoot specific probelm on demand
+flow monitor us used selective too ie network edge to track the application mix direct computation of the traffic matrix and inpu to ddos detection
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=
+Traffic matrix
+	def :representation of traffic volume flowing from source to destination
+	use : capacaity planning, traffic engineering, billing, peering analysisn anomaly detection, desing of new protocol
+	origin destinaiton matrices : hard to work with, aggretion into block of ip addres, no single entity see the internet od matrix
+	ingress router to egress router amtrix
+	binning traffic : depedns on task , measurement tools, storage facilities available
+	build a traffic matrix :
+		packety capture : give the msot detaied view of traffic but exepensive and high collecito of overheafd
+		flow cature;  enough to build traffic matrix and lower colleciton overheaf
+		interface counts : cannot directly measure traffic matrix must estimate but lowers overheaf and widely avaibalbe
+
+Application ientiifiacaiton mdethod:
+	- port based : simplae, fast but used in firewalls and becoming more and more innacurate
+	- content based : widely used ids and very accurate but privacy issue, compute intensive, encryption
+	- behabior based : very richliterature but not very practival
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=
+Security
+
+traffic anomaly detection
+	data source : snmp, netflow, packet capture
+	method : outlier beahviour with respect to some normal pattern
+	suitable for volume attacks
+	approach : temportal identify noraml traffic behaviour by analys=zing time series of each link, spaitail identify normal traffic behaviour across multiple elements of the traffic matrix
+		
+network intrusion detection systems
+	data source : online packet analysis
+	method: configured with acl and signatures
+	to watch violation of protocol and usual connectionpattern, look for malicious command sequance
+	it(s reactive not proactive, monitor performance at high speed link, encryption and skill hacker can evade
+	
+network telescope:
+	monitor traffic tageting unused address space
+	to detect dos, worm, scan vulnarable host
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=
+Privacy
+
+Privacy harm: identity thieft, decision based on personal data, blackmail, goven=rnament surveillance
+anonymization : if data leak less risk, data sharing
+
+Anonymization : 
+	what : identity, personal organization, buisness info
+	how :
+		lossless transformation : two way hash function, mapping is not lost, can do dorrelation
+		semi lossy transofrmation : remove portion of a string
+		lossy transforamtion : one way hashing with secret salt
+	properties of anonymized dataset :
+		k anonymity : a quasi identifier appear in at least k record but if data not diverse in a class no privacy
+		i diversity : enable to have diversity of data but diversity is difficul t to achieve
+		t closeness : distriction of sensitive attribute close to original distribution
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+OSN
+	def : online system centered on users
+	clients :
+		osn developrs : content popularity distribution, trust relations ships
+		advertisers : target ads based on user profile, social influence in ads
+		socioligisdt : social dunamics and infleunce
+	how : osn graph, evolution of osn graph, content
+	basic characteristic : number of user: firend count distribution, personal attirbute, sub communitites
+	properties : intercommunicationf requesncy, popularity growth, rate of change of content	
+	measurement method : direct access of databases or crawling using web interface
+	
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=
+Cnesorship
+	def : an entity that desires that some identifiable commmunication s blocked from being transmitted
+	why : political stability, national security, social values
+	how : 
+		bloci ip addresses configur router using acl, its quick and easu to configure and routers ahave efficia=ent technique for ip matching, but it need to know the ip, collateral damage, use bgp to block ip bgp poisoning instrad of configuring router acl just advertise a bogus route a lot of collateral damage
+		block hostname with dns  
+		distrupt tcp flows, 
+		http transfer
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Geolocation
+	reasons : marketing, intellectual property rights, cybersecurity,
+	how : 
+		metadata lookup
+		rtt measurements : landmarks and targets
+		shortest ping : geolocate a host X according to ping from vantage point. host is at the vantage point if the ping from the vantage give the less rtt. it works well with short rtts.
+		geoping : place a host X at a location Y or Z by comparing the vector distance from vantage points to said location and to host X
+		CBG : overlapping disk, intersection of 2 disk
+		multilateration : 3+ disks, to calcullate disk euclidean distance, haversine formula, distance on a sphere, distance on an ellipsoid vincenty formula
+		TBG : disk + connection
+		Street level : connection + closeness
+		
+		
 
